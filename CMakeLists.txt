@@ -37,5 +37,6 @@ add_executable(phones
   phones-test.cpp
   phones.h
 )
+target_link_libraries(phones gmock)
 target_link_libraries(phones gtest_main)
 add_test(NAME example_test COMMAND example)

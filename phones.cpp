@@ -5,6 +5,7 @@
 #include <cmath>
 #include <array>
 #include <vector>
+#include <tuple>
 
 
 const size_t SHORT_LENGTH = 10,
@@ -46,11 +47,24 @@ bool validatePhone(const std::string& numberString) {
     return false;
 }
 
-void gen(const std::string& spawn) {
+void append(const std::string& s, std::vector<std::string>& in, std::vector<std::string>& out) {
+    if(!in.size()) {
+        out.push_back(s);
+        std::cout << "append: " << s << std::endl;
+        return;
+    }
+    
+    for(auto& v: in) {
+        out.push_back(v + s);
+        std::cout << "append: " << v+s << std::endl;
+    }
+}
+
+void gen(const std::string& spawn, std::vector<std::string>& in, std::vector<std::string>& out) {
+    std::string res;
     std::cout << "spawn " << spawn << std::endl;
     int N = spawn.length();
     for(int i=0; i<N; i++) {
-//        std::cout << 0 << "," << i+1 << "," << N << std::endl;
         std::string s;
         s.resize(N, '0');
         for(int k=0; k<i+1; k++)
@@ -58,35 +72,42 @@ void gen(const std::string& spawn) {
         if(spawn[i+1] == '0')
             continue;
         std::cout << "## " << s << std::endl;
+        res = s;
         
         for(int j=i+1; j<N; j++) {
-//            std::cout << j << "," << 1 << "," << N-j << std::endl;
             std::string s;
             s.resize(N-j, '0');
             if(spawn[j] == '0')
                 break;
             s[0] = spawn[j];
             std::cout << "# " << s << std::endl;
+            res += s;
         }
+        append(res, in, out);
     }
     // abcd: a000 b00 c0 d, ab00 c0 d, abc0 d, abcd
     // abc: a00 b0 c, ab0 c, abc
     // ab: a0 b, ab
+    in = out;
+    out.clear();
 }
 
-std::vector<std::string> ambiguities(const std::string& numberString) {
+std::vector<std::tuple<std::string, bool>> ambiguities(const std::string& numberString) {
     std::istringstream iss(numberString);
     std::string n, merged;
     int merged_zeros = 0;
     std::vector<std::string> result, temp;
+    std::vector<std::tuple<std::string, bool>> res;
+    
     while(iss >> n) {
         char* p;
         strtol(n.c_str(), &p, 10);
         if(*p != 0)
-            return std::vector<std::string>();
+            return res;
         
             
         int zeros = 0;
+        if(n != "0")
         for(auto i = n.crbegin(); i != n.crend(); ++i) {
             if(*i == '0')
                 zeros++;
@@ -99,25 +120,20 @@ std::vector<std::string> ambiguities(const std::string& numberString) {
                 merged.replace(merged.length()-n.length(), std::string::npos, n);
                 bool isLast = (iss.tellg() == -1);
                 if(!zeros || isLast) {
-//                    std::cout << "merged: " << merged << std::endl;
-                    // TODO: spawn and add
-                    gen(merged);
+                    gen(merged, result, temp);
+                } else {
                 }
             } else {
-//                std::cout << merged << std::endl;
-                // TODO: spawn and add
-                gen(merged);
+                std::cout << n << " " << merged << std::endl;
+                gen(merged, result, temp);
+                gen(n, result, temp);
                 if(zeros)
                     merged = n;
             }
-        } else if(zeros) {
+        } else if(zeros && n != "10") {
             merged = n;
         } else {
-//            std::cout << n << std::endl;
-            gen(n);
-//            for(auto& r: result) {
-//                r.append(n);
-//            }
+            gen(n, result, temp);
         }
         
         if(zeros == 0) {
@@ -127,7 +143,11 @@ std::vector<std::string> ambiguities(const std::string& numberString) {
             merged_zeros = zeros;
         }
     }
-    return result;
+    
+    for(auto&& s: result) {
+        res.push_back({s, validatePhone(s)});
+    }
+    return res;
 }
 
 int main1(int argc, char** argv) {
