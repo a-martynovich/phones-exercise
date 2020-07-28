@@ -1,17 +1,15 @@
-#include "phones.h"
-
 #include <iostream>
 #include <sstream>
 #include <cmath>
 #include <array>
 #include <vector>
 #include <tuple>
-
+#include "phones.h"
 
 const size_t SHORT_LENGTH = 10,
              LONG_LENGTH = 14;
-const std::array<std::string, 2> SHORT_PREFIXES { "2", "69"},
-                                 LONG_PREFIXES {"00302", "003069"};
+const std::array<std::string, 2> SHORT_PREFIXES = { "2", "69"},
+                                 LONG_PREFIXES = {"00302", "003069"};
 
 std::string parseNumber(const std::string& numberString) {
     std::istringstream iss(numberString);
@@ -50,19 +48,16 @@ bool validatePhone(const std::string& numberString) {
 void append(const std::string& s, std::vector<std::string>& in, std::vector<std::string>& out) {
     if(!in.size()) {
         out.push_back(s);
-        std::cout << "append: " << s << std::endl;
         return;
     }
     
     for(auto& v: in) {
         out.push_back(v + s);
-        std::cout << "append: " << v+s << std::endl;
     }
 }
 
 void gen(const std::string& spawn, std::vector<std::string>& in, std::vector<std::string>& out) {
     std::string res;
-    std::cout << "spawn " << spawn << std::endl;
     int N = spawn.length();
     for(int i=0; i<N; i++) {
         std::string s;
@@ -71,7 +66,6 @@ void gen(const std::string& spawn, std::vector<std::string>& in, std::vector<std
             s[k] = spawn[k];
         if(spawn[i+1] == '0')
             continue;
-        std::cout << "## " << s << std::endl;
         res = s;
         
         for(int j=i+1; j<N; j++) {
@@ -80,7 +74,6 @@ void gen(const std::string& spawn, std::vector<std::string>& in, std::vector<std
             if(spawn[j] == '0')
                 break;
             s[0] = spawn[j];
-            std::cout << "# " << s << std::endl;
             res += s;
         }
         append(res, in, out);
@@ -124,7 +117,6 @@ std::vector<std::tuple<std::string, bool>> ambiguities(const std::string& number
                 } else {
                 }
             } else {
-                std::cout << n << " " << merged << std::endl;
                 gen(merged, result, temp);
                 gen(n, result, temp);
                 if(zeros)
@@ -150,7 +142,3 @@ std::vector<std::tuple<std::string, bool>> ambiguities(const std::string& number
     return res;
 }
 
-int main1(int argc, char** argv) {
-    std::cout << parseNumber("123 456") << std::endl;
-    return 1;
-}

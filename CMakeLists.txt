@@ -34,9 +34,16 @@ endif()
 
 add_executable(phones
   phones.cpp
+  phones-main.cpp
+  phones.h
+)
+
+add_executable(phones-test
+  phones.cpp
   phones-test.cpp
   phones.h
 )
-target_link_libraries(phones gmock)
-target_link_libraries(phones gtest_main)
-add_test(NAME example_test COMMAND example)
+target_link_libraries(phones-test gmock)
+target_link_libraries(phones-test gtest_main)
+add_test(NAME phones_test COMMAND phones-test)
+add_definitions(-std=c++14 -stdlib=libc++)
