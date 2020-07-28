@@ -78,9 +78,6 @@ void gen(const std::string& spawn, std::vector<std::string>& in, std::vector<std
         }
         append(res, in, out);
     }
-    // abcd: a000 b00 c0 d, ab00 c0 d, abc0 d, abcd
-    // abc: a00 b0 c, ab0 c, abc
-    // ab: a0 b, ab
     in = out;
     out.clear();
 }
@@ -98,15 +95,14 @@ std::vector<std::tuple<std::string, bool>> ambiguities(const std::string& number
         if(*p != 0)
             return res;
         
-            
         int zeros = 0;
         if(n != "0")
-        for(auto i = n.crbegin(); i != n.crend(); ++i) {
-            if(*i == '0')
-                zeros++;
-            else
-                break;
-        }
+            for(auto i = n.crbegin(); i != n.crend(); ++i) {
+                if(*i == '0')
+                    zeros++;
+                else
+                    break;
+            }
                 
         if(merged.length()) {
             if(merged_zeros >= n.length()) {
@@ -114,7 +110,6 @@ std::vector<std::tuple<std::string, bool>> ambiguities(const std::string& number
                 bool isLast = (iss.tellg() == -1);
                 if(!zeros || isLast) {
                     gen(merged, result, temp);
-                } else {
                 }
             } else {
                 gen(merged, result, temp);
